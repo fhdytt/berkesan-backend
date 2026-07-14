@@ -1,5 +1,6 @@
 // kasirRoutes.js — /api/kasir (kasir & admin only)
 const express = require("express");
+const router = express.Router();
 const { verifyToken, isKasir } = require("../middleware/auth");
 
 // Semua route kasir require auth dan role kasir/admin
