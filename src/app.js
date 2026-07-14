@@ -22,9 +22,14 @@ const app = express();
 // SECURITY MIDDLEWARE
 // ============================================
 
-// Helmet untuk security headers — CSP tidak diperlukan karena backend hanya melayani API
+// Helmet untuk security headers
+// - contentSecurityPolicy: false   → backend hanya API, tidak serve HTML
+// - crossOriginResourcePolicy: false → izinkan browser fetch dari domain lain (Vercel)
+// - crossOriginOpenerPolicy: false   → tidak diperlukan untuk pure API
 app.use(helmet({
   contentSecurityPolicy: false,
+  crossOriginResourcePolicy: false,
+  crossOriginOpenerPolicy: false,
 }));
 
 // CORS configuration
