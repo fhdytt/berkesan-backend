@@ -1,111 +1,98 @@
-# Berkesan Backend — Ngrok
+# Berkesan Coffee — Backend API
 
-Backend berjalan di lokal, diekspos ke internet via Ngrok.  
-MySQL juga berjalan lokal — tidak perlu database cloud.
+REST API untuk sistem POS & ordering Berkesan Coffee Shop.
 
----
-
-## Prasyarat
-
-- Node.js v18+
-- MySQL berjalan di lokal
-- Akun Ngrok gratis → [ngrok.com](https://ngrok.com)
+**Stack:** Express.js · PostgreSQL · JWT · bcryptjs
 
 ---
 
-## 1. Setup Backend
+## Deploy ke Railway
+
+1. Push repo ini ke GitHub
+2. Buka [railway.app](https://railway.app) → **New Project** → **Deploy from GitHub repo**
+3. Pilih repo ini — Railway otomatis membaca `railway.json` dan menjalankan `node src/server.js`
+4. Tambahkan **database**: klik **+ New** → **Database** → **PostgreSQL**
+5. Setelah database aktif, Railway otomatis mengisi `DATABASE_URL` di environment variables
+6. Tambahkan environment variables berikut di tab **Variables**:
+
+| Variable | Nilai |
+|---|---|
+| `NODE_ENV` | `production` |
+| `JWT_SECRET` | string acak panjang (min 32 karakter) |
+| `JWT_EXPIRES_IN` | `7d` |
+| `BCRYPT_ROUNDS` | `10` |
+| `FRONTEND_URL` | URL Vercel kamu (isi setelah deploy frontend) |
+| `DATABASE_URL` | otomatis dari plugin PostgreSQL Railway |
+
+7. Jalankan schema database via Railway Shell:
+   ```bash
+   psql $DATABASE_URL -f database/schema.postgres.sql
+   psql $DATABASE_URL -f database/dummy_data.sql
+   ```
+8. Catat URL backend Railway (contoh: `https://berkesan-production.up.railway.app`)
+
+---
+
+## Development Lokal
+
+### 1. Jalankan database
+
+```bash
+docker compose up -d
+```
+
+### 2. Setup environment
+
+```bash
+cp .env.example .env
+# Edit .env sesuai kebutuhan (DATABASE_URL sudah sesuai docker-compose)
+```
+
+### 3. Install & jalankan
 
 ```bash
 npm install
-cp .env.example .env
+npm run dev
 ```
 
-Edit `.env` sesuai konfigurasi MySQL lokal kamu, lalu import database:
-
-```bash
-mysql -u root -p < database/schema.sql
-```
-
-Jalankan server:
-
-```bash
-npm start
-```
-
-Pastikan berjalan di `http://localhost:3000`.
+Server berjalan di `http://localhost:3000`.
 
 ---
 
-## 2. Install & Setup Ngrok
+## Struktur Folder
 
-**Linux:**
-```bash
-curl -sSL https://ngrok-agent.s3.amazonaws.com/ngrok.asc \
-  | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null \
-  && echo "deb https://ngrok-agent.s3.amazonaws.com buster main" \
-  | sudo tee /etc/apt/sources.list.d/ngrok.list \
-  && sudo apt update && sudo apt install ngrok
 ```
-
-**Mac:**
-```bash
-brew install ngrok
-```
-
-**Windows:** Download installer dari [ngrok.com/download](https://ngrok.com/download)
-
----
-
-## 3. Hubungkan Akun Ngrok
-
-Daftar di [ngrok.com](https://ngrok.com), lalu salin authtoken dari dashboard.
-
-```bash
-ngrok config add-authtoken <TOKEN_KAMU>
+berkesan_railway/
+├── src/
+│   ├── server.js          # Entry point
+│   ├── app.js             # Express config
+│   ├── config/
+│   │   └── database.js    # PostgreSQL pool
+│   ├── controllers/       # Request handlers
+│   ├── routes/            # Route definitions
+│   ├── middleware/        # Auth, error handler
+│   ├── utils/             # JWT, hash helpers
+│   └── validations/       # Input validation
+├── database/
+│   ├── schema.postgres.sql
+│   └── dummy_data.sql
+├── .env.example
+├── docker-compose.yml
+├── railway.json
+└── Procfile
 ```
 
 ---
 
-## 4. Dapatkan Static Domain (URL Tetap)
+## Environment Variables
 
-Di dashboard Ngrok → **Cloud Edge** → **Domains** → **New Domain**.  
-Ngrok akan generate 1 domain gratis seperti `impish-harpist-parcel.ngrok-free.dev`.
-
----
-
-## 5. Jalankan Ngrok
-
-```bash
-# Pastikan backend sudah jalan (npm start), lalu:
-ngrok http --domain=impish-harpist-parcel.ngrok-free.dev 3000
-```
-
-Ganti `impish-harpist-parcel.ngrok-free.dev` dengan domain yang kamu dapat di langkah 4.
+Lihat `.env.example` untuk daftar lengkap semua variable yang dibutuhkan.
 
 ---
 
-## 6. Update Frontend
+## Demo Accounts (setelah load dummy_data.sql)
 
-Edit `berkesan-frontend/public/js/api.config.js`:
-
-```js
-const BACKEND_URL = "https://impish-harpist-parcel.ngrok-free.dev";
-```
-
-Lalu redeploy frontend ke Vercel.
-
----
-
-## Setiap Kali Mau Demo
-
-Cukup jalankan dua perintah ini:
-
-```bash
-# Terminal 1
-npm start
-
-# Terminal 2
-ngrok http --domain=impish-harpist-parcel.ngrok-free.dev 3000
-```
-
-Laptop harus tetap menyala dan terhubung internet selama demo berlangsung.
+| Role  | Username | Password |
+|-------|----------|----------|
+| Admin | Admin    | admin    |
+| Kasir | Kasir    | kasir    |

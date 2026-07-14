@@ -1,0 +1,55 @@
+# docker-compose.yml — PostgreSQL lokal untuk development
+#
+# Cara pakai:
+#   docker compose up -d         → jalankan database di background
+#   docker compose down          → matikan database (data tetap ada)
+#   docker compose down -v       → matikan + hapus semua data (reset total)
+#   docker compose logs -f db    → lihat log database
+#
+# Setelah database jalan:
+#   1. Copy .env.example ke .env, isi sesuai kebutuhan
+#   2. npm install
+#   3. npm run dev
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: berkesan_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: berkesan
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: P@ssw0rd!
+    ports:
+      - "5432:5432"
+    volumes:
+      # Data persisten — tidak hilang meski container di-restart
+      - berkesan_pgdata:/var/lib/postgresql/data
+      # Schema otomatis dijalankan saat container pertama kali dibuat
+      - ./database/schema.postgres.sql:/docker-entrypoint-initdb.d/01_schema.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d berkesan"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # pgAdmin — UI untuk lihat/kelola database via browser di http://localhost:5050
+  # Jalankan hanya jika perlu: docker compose --profile tools up -d
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: berkesan_pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@berkesan.local
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    depends_on:
+      db:
+        condition: service_healthy
+    profiles:
+      - tools
+
+volumes:
+  berkesan_pgdata:
+    driver: local
