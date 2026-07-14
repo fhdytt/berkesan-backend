@@ -1,3 +1,4 @@
+// errorHandler.js — global error handler Express
 const errorHandler = (err, req, res, next) => {
   console.error(`[ERROR] ${new Date().toISOString()}:`, err.message);
   

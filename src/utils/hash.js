@@ -1,3 +1,4 @@
+// hash.js — bcrypt helper untuk hash dan verifikasi password
 const bcrypt = require('bcryptjs');
 
 const SALT_ROUNDS = parseInt(process.env.BCRYPT_ROUNDS) || 10;

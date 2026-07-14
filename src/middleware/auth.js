@@ -1,3 +1,4 @@
+// auth.js — middleware verifikasi JWT dan pengecekan role (admin/kasir)
 const { verifyToken } = require('../utils/jwt');
 
 const verifyTokenMiddleware = (req, res, next) => {

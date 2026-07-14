@@ -1,3 +1,4 @@
+// app.js — konfigurasi Express: middleware, CORS, rate limiter, routes
 const express = require("express");
 const cors = require("cors");
 const helmet = require("helmet");
@@ -23,30 +24,23 @@ const app = express();
 // ============================================
 
 // Helmet untuk security headers
-// - contentSecurityPolicy: false   → backend hanya API, tidak serve HTML
-// - crossOriginResourcePolicy: false → izinkan browser fetch dari domain lain (Vercel)
-// - crossOriginOpenerPolicy: false   → tidak diperlukan untuk pure API
 app.use(helmet({
   contentSecurityPolicy: false,
   crossOriginResourcePolicy: false,
   crossOriginOpenerPolicy: false,
 }));
 
-// CORS configuration
-// FRONTEND_URL di .env diisi URL Vercel (bisa lebih dari satu, pisah koma)
-// Contoh: FRONTEND_URL=https://berkesan.vercel.app,https://berkesan-coffee.vercel.app
+// CORS — izinkan request dari frontend Vercel
 const allowedOrigins = process.env.FRONTEND_URL
   ? process.env.FRONTEND_URL.split(',').map(u => u.trim())
   : ['http://localhost:3000', 'http://127.0.0.1:5500'];
 
 app.use(cors({
   origin: function (origin, callback) {
-    // Izinkan request tanpa origin (mobile apps, curl, Postman)
     if (!origin) return callback(null, true);
 
     const isAllowed =
       allowedOrigins.includes(origin) ||
-      // Izinkan semua subdomain *.vercel.app (preview deployments)
       /^https:\/\/[a-z0-9-]+-[a-z0-9]+-[a-z0-9]+\.vercel\.app$/.test(origin) ||
       /^https:\/\/[a-z0-9-]+\.vercel\.app$/.test(origin);
 

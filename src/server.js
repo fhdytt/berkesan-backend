@@ -1,3 +1,4 @@
+// server.js — entry point, menjalankan Express app
 require('dotenv').config();
 const app = require("./app");
 

@@ -1,36 +1,28 @@
+// database.js — koneksi PostgreSQL dengan connection pool
 const { Pool } = require("pg");
 
-// Konfigurasi pool yang lebih robust
 const poolConfig = {
   connectionString: process.env.DATABASE_URL,
-  // SSL untuk production (Railway/Cloud)
-  ssl: process.env.NODE_ENV === "production" 
-    ? { rejectUnauthorized: false } 
-    : false,
-  // Connection pool optimization
+  ssl: process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : false,
   max: parseInt(process.env.DB_POOL_MAX) || 20,
   min: parseInt(process.env.DB_POOL_MIN) || 5,
   idleTimeoutMillis: 30000,
   connectionTimeoutMillis: 5000,
-  // Retry logic
   retryDelay: 1000,
   retryCount: 3,
 };
 
 const pool = new Pool(poolConfig);
 
-// Event listeners untuk monitoring
 pool.on("connect", () => {
   console.log("Database connected successfully");
 });
 
 pool.on("error", (err) => {
   console.error("Unexpected database error:", err.message);
-  // Jangan exit process, biar retry connection
 });
 
 pool.on("acquire", () => {
-  // Optional: untuk debugging connection leak
   if (process.env.NODE_ENV === "development") {
     console.debug("Client acquired from pool");
   }
@@ -72,19 +64,13 @@ const query = async (text, params, client = null) => {
     const result = await dbClient.query(text, params);
     const duration = Date.now() - start;
     
-    // Log slow queries (> 100ms) di development
     if (process.env.NODE_ENV === "development" && duration > 100) {
       console.warn(`Slow query (${duration}ms):`, { text, params });
     }
     
     return result;
   } catch (error) {
-    console.error("Query error:", { 
-      text, 
-      params, 
-      error: error.message,
-      duration: Date.now() - start 
-    });
+    console.error("Query error:", { text, params, error: error.message });
     throw error;
   }
 };

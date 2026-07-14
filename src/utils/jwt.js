@@ -1,3 +1,4 @@
+// jwt.js — generate dan verifikasi JWT token
 const jwt = require('jsonwebtoken');
 
 const generateToken = (payload) => {

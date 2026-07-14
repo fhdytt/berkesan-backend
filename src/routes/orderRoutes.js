@@ -1,6 +1,5 @@
+// orderRoutes.js — /api/order (publik buat order, kasir/admin kelola)
 const express = require("express");
-const router = express.Router();
-const orderController = require("../controllers/orderController");
 const { verifyToken, isKasir, isAdmin } = require("../middleware/auth");
 
 // ============================================

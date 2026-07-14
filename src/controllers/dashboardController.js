@@ -1,12 +1,5 @@
+// dashboardController.js — statistik, rekap, laporan, CRUD menu/kategori/meja/users
 const db = require("../config/database");
-
-// Helper response
-const sendResponse = (res, success, data = null, message = null, statusCode = 200) => {
-  const response = { success };
-  if (data) response.data = data;
-  if (message) response.message = message;
-  return res.status(statusCode).json(response);
-};
 
 // Validasi parameter
 const validateMonthYear = (month, year) => {

@@ -1,6 +1,5 @@
+// dashboardRoutes.js — /api/dashboard (admin only)
 const express = require("express");
-const router = express.Router();
-const dashboardController = require("../controllers/dashboardController");
 const { verifyToken, isAdmin } = require("../middleware/auth");
 
 // Semua route dashboard hanya untuk admin

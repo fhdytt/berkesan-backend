@@ -1,3 +1,4 @@
+// kasirController.js — logika kasir: antrean, konfirmasi pembayaran, struk
 const { pool, query } = require("../config/database");
 
 // Helper response
@@ -390,11 +391,6 @@ exports.processPayment = async (req, res) => {
     const { paid_amount, payment_method } = req.body;
     const userId = req.user.id;
     
-    console.log("🔍 processPayment - orderId:", id);
-    console.log("🔍 paid_amount:", paid_amount);
-    console.log("🔍 payment_method:", payment_method);
-    
-    // Validasi
     if (!paid_amount || paid_amount <= 0) {
       return sendResponse(res, false, null, "Jumlah pembayaran wajib diisi", 400);
     }
@@ -403,8 +399,6 @@ exports.processPayment = async (req, res) => {
     if (!order) {
       return sendResponse(res, false, null, "Order tidak ditemukan", 404);
     }
-    
-    console.log("🔍 Order found:", order.id, order.status, order.total_price);
     
     if (order.status !== 'pending') {
       return sendResponse(res, false, null, "Order sudah diproses", 400);
@@ -428,8 +422,6 @@ exports.processPayment = async (req, res) => {
     ORDER BY CAST(SUBSTRING(queue_number FROM 2) AS INTEGER) DESC 
     LIMIT 1
   `);
-
-  console.log("🔍 Last queue:", lastQueue.rows);
 
   let nextNumber = 1;
   if (lastQueue.rows.length > 0 && lastQueue.rows[0].queue_number) {
