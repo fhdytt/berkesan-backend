@@ -1,6 +1,8 @@
 // authController.js — login, register, manajemen sesi user
 const db = require("../config/database");
 
+const { hashPassword, comparePassword, generateToken } = require("../utils/hash");
+
 const VALID_ROLES = ["admin", "kasir"];
 
 // Helper response
