@@ -1,2 +1,17 @@
+# Dependencies
 node_modules/
+
+# Environment variables — JANGAN pernah commit file ini!
 .env
+
+# Logs
+*.log
+logs/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
