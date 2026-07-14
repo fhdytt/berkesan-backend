@@ -1,6 +1,7 @@
 // menuRoutes.js — /api/menu (publik GET, admin POST/PUT/DELETE)
 const express = require("express");
 const router = express.Router();
+const menuController = require('../controllers/menuController');
 const { verifyToken, isAdmin, isKasir } = require("../middleware/auth");
 
 // ============================================

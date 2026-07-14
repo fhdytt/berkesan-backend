@@ -1,5 +1,6 @@
 // orderController.js — buat order, cek status, alur pembayaran pelanggan
 const { pool } = require("../config/database");
+const sendResponse = (res, success, data = null, message = null, statusCode = 200) => {
   const response = { success };
   if (data) response.data = data;
   if (message) response.message = message;
