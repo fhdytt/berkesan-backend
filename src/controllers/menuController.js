@@ -1,5 +1,6 @@
 // menuController.js — CRUD menu publik (GET) dan admin (POST/PUT/DELETE)
 const db = require("../config/database");
+const sendResponse = (res, success, data = null, message = null, statusCode = 200) => {
   const response = { success };
   if (data) response.data = data;
   if (message) response.message = message;
