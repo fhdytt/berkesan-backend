@@ -1,5 +1,7 @@
 // authRoutes.js — /api/auth (login, register, profile)
 const express = require("express");
+const router = express.Router();   
+const authController = require('../controllers/authController');
 const { verifyToken, isAdmin } = require("../middleware/auth");
 
 // ============================================
